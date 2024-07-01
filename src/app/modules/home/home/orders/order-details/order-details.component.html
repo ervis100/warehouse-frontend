@@ -1,0 +1,21 @@
+<mat-card class="example-card" *ngIf="!!order">
+    <div class="row">
+        <div class="col-8">
+            <mat-card-header>
+                <mat-card-title>Order: {{order.id}}</mat-card-title>
+                <mat-card-subtitle>Sender: {{order.senderId}} => Receiver: {{order.receiverId}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p>{{order.description}}</p>
+                <p>Sender Agency: {{order.senderAgencyId}}</p>
+                <p>Receiver Agency: {{order.receiverAgencyId}}</p>
+                <p>Price: {{order.price}}</p>
+                <p>Status: {{orderStatus[order.orderStatus]}}</p>
+                <p>Expected Arrival Time: {{order.excpectedArrivalTime + " days"}}</p>
+            </mat-card-content>
+        </div>
+        <div class="col-4">
+            <qrcode [qrdata]="dataStr" [width]="256" [errorCorrectionLevel]="'M'"></qrcode>
+        </div>
+    </div>
+</mat-card>

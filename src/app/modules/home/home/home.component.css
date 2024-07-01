@@ -1,0 +1,43 @@
+.app-navbar {
+  background-color: #3f51b5;
+  color: white;
+  height: 56px;
+}
+
+.app-holder {
+  height: calc(100vh - 56px);
+}
+
+.app-nav {
+  position: sticky;
+  top: 0;
+}
+
+.app-nav .app-nav-content {
+  width: 240px;
+  height: 100%;
+  overflow: auto;
+}
+
+.app-nav .app-nav-content a {
+  display: block;
+  text-decoration: none;
+}
+
+.app-nav-content a.app-nav-sidenav-item-selected {
+  background: rgba(103, 58, 183, 0.15);
+  color: #3f51b5;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.py-3 {
+  padding-top: 0 !important;
+}
+
+.submenu{
+  display: flex;
+  padding-left: 12%;
+}

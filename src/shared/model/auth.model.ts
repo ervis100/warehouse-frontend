@@ -4,7 +4,8 @@ import {Token} from "./token.model";
 export class Auth {
     public constructor(
       public user: User,
-      public token: string
+      public accessToken: string,
+      public refreshToken: string
     ) {
     }
 
@@ -12,7 +13,8 @@ export class Auth {
     {
       return new Auth(
         User.getInstance(params.user),
-        params.token
+        params.accessToken,
+        params.refreshToken
       );
     }
 }

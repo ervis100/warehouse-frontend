@@ -1,0 +1,67 @@
+<mat-toolbar class="app-navbar">
+  <button (click)="drawer.toggle()" mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>{{ appName }}</span>
+  <span class="spacer"></span>
+  <span aria-label="Example icon-button with heart icon">
+    {{user?.firstname}} {{user?.lastname}}
+  </span>
+  <mat-icon>account_circle</mat-icon>
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Log out</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+<mat-drawer-container class="app-holder">
+  <mat-drawer #drawer mode="side" [opened]="opened">
+    <div class="app-nav">
+      <div class="app-nav-content ng-star-inserted">
+        <mat-nav-list *ngFor="let link of links" role="navigation" class="mat-nav-list mat-list-base">
+          <div *ngIf="!link.url.includes('sources')">
+            <a mat-list-item [routerLink]="link.url" routerLinkActive="app-nav-sidenav-item-selected"
+               class="mat-list-item mat-focus-indicator ng-star-inserted">
+            <span class="mat-list-item-content">
+              <span mat-ripple="" class="mat-ripple mat-list-item-ripple"></span>
+                <span class="mat-list-text"></span>
+                <mat-icon *ngIf="!!link.icon">{{ link.icon }}</mat-icon>
+              {{ link.text }}
+            </span>
+            </a>
+          </div>
+          <a (click)="hide()" *ngIf="link.url.includes('sources')"
+             mat-list-item
+             class="mat-list-item mat-focus-indicator ng-star-inserted">
+          <span class="mat-list-item-content">
+              <span mat-ripple="" class="mat-ripple mat-list-item-ripple"></span>
+                <span class="mat-list-text"></span>
+                <mat-icon *ngIf="!!link.icon">{{ link.icon }}</mat-icon>
+            {{ link.text }}
+            </span>
+
+          </a>
+          <mat-nav-list class="submenu" *ngIf="link.text.includes('sources') && makeVisible">
+            <a *ngFor="let subLink of link.subLinks" mat-list-item [routerLink]="subLink.url" routerLinkActive="app-nav-sidenav-item-selected"
+               class="mat-list-item mat-focus-indicator ng-star-inserted" >
+               <span class="mat-list-item-content">
+                  <span mat-ripple="" class="mat-ripple mat-list-item-ripple"></span>
+                    <span class="mat-list-text"></span>
+                    <mat-icon *ngIf="!!subLink.icon">{{ subLink.icon }}</mat-icon>
+                 {{ subLink.text}}
+                </span>
+            </a>
+          </mat-nav-list>
+
+        </mat-nav-list>
+      </div>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content class="px-2 py-3">
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>

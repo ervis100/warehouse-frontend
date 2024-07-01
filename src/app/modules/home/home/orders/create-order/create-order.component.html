@@ -1,0 +1,46 @@
+<div *ngIf="dataLoaded" class="col-8 mt-2">
+  <form [formGroup]="createOrderForm">
+    <div class="d-flex justify-content-between">
+<!--      <mat-form-field>-->
+<!--        <input matInput [matDatepicker]="submittedDatepicker" placeholder="Submitted Date"-->
+<!--               formControlName="submittedDate">-->
+<!--        <mat-datepicker-toggle matSuffix [for]="submittedDatepicker"></mat-datepicker-toggle>-->
+<!--        <mat-datepicker #submittedDatepicker></mat-datepicker>-->
+<!--        <mat-error *ngIf="createOrderForm.get('submittedDate').invalid">Submitted Date is required</mat-error>-->
+<!--      </mat-form-field>-->
+
+      <mat-form-field>
+        <input matInput [matDatepicker]="deadlineDatepicker" placeholder="Deadline" formControlName="deadLine">
+        <mat-datepicker-toggle matSuffix [for]="deadlineDatepicker"></mat-datepicker-toggle>
+        <mat-datepicker #deadlineDatepicker></mat-datepicker>
+        <mat-error *ngIf="createOrderForm.get('deadLine').invalid">Deadline is required</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div formArrayName="items">
+      <div *ngFor="let item of formItems; let i=index" [formGroupName]="i" class="d-flex justify-content-between">
+        <mat-form-field>
+          <mat-label>Choose Item</mat-label>
+          <mat-select formControlName="itemId">
+            @for (item of items; track item) {
+            <mat-option [value]="item.id">{{item.name}}</mat-option>
+            }
+          </mat-select>
+          <mat-error *ngIf="item.get('itemId').invalid">Item ID is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput type="number" placeholder="Quantity" formControlName="quantity">
+          <mat-error *ngIf="item.get('quantity').invalid">Quantity is required</mat-error>
+        </mat-form-field>
+        <button mat-icon-button color="warn" (click)="removeItem(i)" aria-label="Delete item">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between">
+      <button mat-raised-button type="button" color="primary" (click)="addItem()">Add Item</button>
+      <button mat-raised-button color="primary" (click)="submit()" type="submit">Submit</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,29 @@
+.login-card-holder {
+  height: 100vh;
+  padding: 20px;
+}
+
+.login-card {
+  max-width: 400px;
+}
+
+.forgot-pass-link {
+  margin-left: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #3f51b5;
+  font-weight: 400;
+  transition: 300ms;
+}
+
+.forgot-pass-link:hover {
+  filter: brightness(1.4);
+}
+
+.submitBtn {
+  transition: 300ms;
+}
+
+.submitBtn:hover {
+  filter: brightness(1.2);
+}

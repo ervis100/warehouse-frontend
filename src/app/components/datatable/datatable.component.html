@@ -1,0 +1,257 @@
+<div class="mat-elevation-z8">
+  <div class="row align-items-center py-1 px-3">
+    <div class="col-6">
+      <button
+        class="m-1"
+        *ngFor="let button of buttons"
+        mat-mini-fab
+        color="{{ button.color }}"
+        matTooltip="{{ button.title}}"
+        (click)="buttonClicked(button.action)"
+      >
+        <mat-icon>{{ button.icon }}</mat-icon>
+      </button>
+    </div>
+    <div
+      class="col-6 d-flex justify-content-end"
+      [ngClass]="{ 'd-none': !displaySearch }"
+    >
+      <input
+        [formControl]="searchControl"
+        placeholder="search"
+        class="form-control search-field"
+      />
+    </div>
+  </div>
+  <div class="dt-loading-shade" *ngIf="fetching">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="table-responsive">
+        <table
+          mat-table
+          [dataSource]="dataSource"
+          matSort
+          (matSortChange)="announceSortChange($event)"
+          [matSortActive]="sortBy"
+          [matSortDirection]="sortDir"
+          multiTemplateDataRows
+        >
+          <ng-container *ngIf="!!actions" matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-button [matMenuTriggerFor]="menu">
+                <mat-icon
+                  aria-hidden="false"
+                  fontIcon="settings"
+                  color="primary"
+                ></mat-icon>
+              </button>
+              <mat-menu #menu="matMenu" class="w-75">
+                <ng-container *ngFor="let action of actions">
+                  <button
+                    *ngIf="!action.show || action.show(element)"
+                    type="button"
+                    (click)="onAction(action.action)"
+                    mat-button
+                    class="w-100"
+                  >
+                    <mat-icon color="primary" *ngIf="!!action.icon">{{
+                      action.icon
+                    }}</mat-icon>
+                    {{ action.title }}
+                  </button>
+                </ng-container>
+              </mat-menu>
+            </td>
+          </ng-container>
+          <ng-container
+            *ngFor="let column of columns"
+            matColumnDef="{{ column.prop }}"
+          >
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header="{{ column.prop }}"
+              [disabled]="!column.orderable"
+            >
+              {{ column.name }}
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <div
+                *ngIf="!!column.render; else notRendered"
+                appIcon
+                [icon]="column.icon"
+                [text]="column.render(element[column.prop], element)"
+                [renderType]="column.renderType"
+                style="color: #3f51b5"
+              ></div>
+              <ng-template #notRendered>
+                <div
+                  *ngIf="
+                    isTypeOfArray(element[column.prop]);
+                    else simpleContent
+                  "
+                >
+                  <div *ngIf="!column.objectProperty; else objectContent">
+                    <div *ngFor="let item of element[column.prop]">
+                      {{ item }}
+                    </div>
+                  </div>
+
+                  <ng-template #objectContent>
+                    <div *ngFor="let item of element[column.prop]">
+                      {{ item[column.objectProperty] }}
+                    </div>
+                  </ng-template>
+                </div>
+                <ng-template #simpleContent>
+                  <div *ngIf="!column.objectProperty; else objectContent">
+                    <div
+                      class="added-companies-cell"
+                      (click)="cellClick(element, column.prop)"
+                    >
+                      {{
+                        column.prop == "notes"
+                          ? element[column.prop].slice(0, 150)
+                          : column.prop == "website"
+                          ? element[column.prop].slice(0, 35)
+                          : element[column.prop]
+                      }}
+                    </div>
+                  </div>
+                  <ng-template #objectContent>
+                    <div>
+                      {{ element[column.objectProperty][column.prop] }}
+                    </div>
+                  </ng-template>
+                </ng-template>
+              </ng-template>
+            </td>
+            <ng-container>
+              <td
+                class="footer_total-content"
+                mat-footer-cell
+                *matFooterCellDef
+              >
+                {{ totalFooterColumns[column.prop] }}
+              </td>
+            </ng-container>
+          </ng-container>
+          <ng-container matColumnDef="no_rows_to_show">
+            <td
+              mat-footer-cell
+              *matFooterCellDef
+              [colSpan]="columnsNames.length"
+            >
+              <div
+                class="d-flex align-items-center justify-content-center"
+                style="color: rgba(0, 0, 0, 0.54)"
+              >
+                <mat-icon>info</mat-icon>
+                Nuk ka te dhena
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="expand">
+            <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+              &nbsp;
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <button
+                mat-icon-button
+                aria-label="expand row"
+                (click)="detailsControl(element); $event.stopPropagation()"
+              >
+                <mat-icon *ngIf="expandedElement !== element"
+                  >keyboard_arrow_down</mat-icon
+                >
+                <mat-icon *ngIf="expandedElement === element"
+                  >keyboard_arrow_up</mat-icon
+                >
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container *ngIf="hasDetails" matColumnDef="expandedDetail">
+            <td
+              mat-cell
+              *matCellDef="let element"
+              [attr.colspan]="columnsNames.length"
+            >
+              <div
+                class="example-element-detail"
+                [@detailExpand]="
+                  element == expandedElement ? 'expanded' : 'collapsed'
+                "
+                style="background-color: whitesmoke !important"
+              >
+                <ng-container
+                  table-details
+                  [data]="element"
+                  [currentElement]="expandedElement"
+                  [component]="detailsComponent"
+                >
+                </ng-container>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnsNames"></tr>
+          <tr
+            mat-row
+            *matRowDef="let element; columns: columnsNames"
+            (click)="onRowClick(element)"
+            class="example-element-row"
+            [class.example-expanded-row]="expandedElement === element"
+          ></tr>
+          <ng-container *ngIf="hasTotalFooter">
+            <tr
+              [class]="{ 'd-none': rows.length < 1 }"
+              mat-footer-row
+              *matFooterRowDef="columnsNames"
+            ></tr>
+          </ng-container>
+
+          <tr
+            [class]="{ 'd-none': rows.length }"
+            mat-footer-row
+            *matFooterRowDef="['no_rows_to_show']"
+          ></tr>
+
+          <ng-container *ngIf="hasDetails">
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['expandedDetail']"
+              class="example-detail-row"
+            ></tr>
+          </ng-container>
+        </table>
+
+        <!-- [pageSizeOptions]="[5, 10, 20]" -->
+      </div>
+      <div class="datatable-row">
+        <mat-paginator
+          (page)="onPage($event, 'paginator')"
+          pageSize="10"
+          showFirstLastButtons
+          [length]="totalElements"
+          [pageIndex]="pageIndex"
+        ></mat-paginator>
+        <mat-form-field class="datatable-row-select">
+          <mat-label>Page</mat-label>
+          <mat-select
+            [value]="pageIndex"
+            (selectionChange)="onPage($event, 'select')"
+          >
+            <mat-option *ngFor="let page of totalPagesArr" [value]="page">
+              {{ page + 1 }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</div>
